@@ -1,0 +1,124 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{setspace}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
+    urlcolor=blue!60!black
+}
+\onehalfspacing
+
+\title{
+    \vspace{-1cm}
+    \Large\textbf{Customer Churn Prediction\\Using Machine Learning}
+}
+\author{
+    William Chen
+}
+\date{}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+This project investigates customer churn prediction in the telecom industry using Logistic Regression. The dataset, sourced from Kaggle, contains over 500,000 customer records with features including support call frequency, payment delay, contract length, and total spend. Performance is assessed using overall accuracy and minority class recall on a held-out test set. 
+Initial results reveal a significant discrepancy between training accuracy (89.5\%) and test accuracy (57.1\%), with minority class recall of only 19.4\%. Through distribution analysis, we identify a substantial distribution shift in the original train/test split, particularly in the Not Churn group. Following a random re-split of the dataset, the model achieves a test accuracy of 84.7\% and a minority class recall of 84.7\%, demonstrating that the original performance degradation was attributable to data partitioning rather than model limitations.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════
+\section{Introduction}
+% ══════════════════════════════════════════════════════════
+Customer churn refers to the rate at which customers discontinue their subscription 
+or cease using a company's products and services within a given period. For telecom 
+companies, churn is a critical business metric, as retaining existing customers is 
+substantially more cost-effective than acquiring new ones. Identifying customers at 
+risk of churning enables companies to intervene proactively, through targeted 
+retention strategies, personalized offers, or service improvements, before the 
+customer decides to leave.
+
+This project investigates customer churn prediction using Logistic Regression on a 
+telecom customer dataset of over 500,000 records. Rather than focusing solely on 
+maximizing classifier performance, this work emphasizes identifying and addressing 
+data quality issues that affect model reliability. Through exploratory data analysis 
+and model evaluation, we uncover a distribution shift in the original train/test 
+split, analyze its cause, and demonstrate that correcting the data partitioning 
+substantially improves generalization performance.
+% ══════════════════════════════════════════════════════════
+\section{Data}
+% ══════════════════════════════════════════════════════════
+
+\subsection{Dataset Overview}
+The dataset contains 505,207 customer records sourced from Kaggle, representing 
+telecom subscribers over a 12-month observation period. The dataset is pre-divided 
+into a training set (440,833 observations) and a test set (64,374 observations). 
+During preprocessing, one incomplete observation was removed from the training set, 
+resulting in a final training set of 440,832 records. The target variable 
+\textit{Churn} is binary, where 1 indicates a customer who discontinued their 
+subscription and 0 indicates a retained customer. The training set contains 
+190,833 non-churned (43.3\%) and 249,999 churned (56.7\%) customers, indicating 
+a mild class imbalance.
+
+\subsection{Feature Description}
+
+The dataset contains 11 variables: 1 identifier (CustomerID, excluded from analysis), 
+1 binary target (Churn), and 10 predictors. Features span demographic (Age, Gender), 
+behavioral (Usage Frequency, Support Calls, Payment Delay, Total Spend, Last 
+Interaction), and contractual (Tenure, Subscription Type, Contract Length) dimensions. 
+Among the 10 predictors, 3 are categorical and 7 are continuous.
+% ══════════════════════════════════════════════════════════
+\section{Exploratory Data Analysis}
+% ══════════════════════════════════════════════════════════
+
+\subsection{Summary Statistics}
+
+\subsection{Feature Distribution by Churn}
+
+\subsection{Feature Correlation}
+
+\subsection{Multicollinearity Check (VIF)}
+
+% ══════════════════════════════════════════════════════════
+\section{Methodology}
+% ══════════════════════════════════════════════════════════
+
+\subsection{Data Preprocessing}
+
+\subsection{Feature Selection (Backward Elimination)}
+
+\subsection{Logistic Regression}
+
+% ══════════════════════════════════════════════════════════
+\section{Results}
+% ══════════════════════════════════════════════════════════
+
+\subsection{Logistic Regression (Original Split)}
+
+\subsection{Distribution Shift Analysis}
+
+\subsection{Logistic Regression (Re-split)}
+
+% ══════════════════════════════════════════════════════════
+\section{Discussion \& Conclusion}
+% ══════════════════════════════════════════════════════════
+
+\subsection{Key Findings}
+
+\subsection{Business Recommendations}
+
+\subsection{Limitations}
+
+\end{document}
