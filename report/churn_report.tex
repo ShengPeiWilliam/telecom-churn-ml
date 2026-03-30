@@ -2,6 +2,8 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{float}
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{setspace}
@@ -32,11 +34,22 @@
 \thispagestyle{empty}
 
 \begin{abstract}
-This project investigates customer churn prediction in the telecom industry using Logistic Regression. The dataset, sourced from Kaggle, contains over 500,000 customer records with features including support call frequency, payment delay, contract length, and total spend. Performance is assessed using overall accuracy and minority class recall on a held-out test set. 
-Initial results reveal a significant discrepancy between training accuracy (89.5\%) and test accuracy (57.1\%), with minority class recall of only 19.4\%. Through distribution analysis, we identify a substantial distribution shift in the original train/test split, particularly in the Not Churn group. Following a random re-split of the dataset, the model achieves a test accuracy of 84.7\% and a minority class recall of 84.7\%, demonstrating that the original performance degradation was attributable to data partitioning rather than model limitations.
+This project investigates customer churn prediction in the telecom industry using 
+logistic regression. The dataset contains over 500,000 customer records with 
+features including support call frequency, payment delay, contract length, and 
+total spend. Model performance is evaluated using accuracy, sensitivity, and 
+specificity on a held-out test set.
+
+Initial results reveal a significant discrepancy between training accuracy (89.5\%) 
+and test accuracy (57.1\%), with a sensitivity of only 19.4\% for the churned class. 
+Through distribution analysis, we identify a distributional inconsistency between 
+the original train and test sets, particularly within the non-churned group. 
+Following a random re-split of the data, the model achieves a test accuracy of 
+84.8\% with balanced sensitivity (84.7\%) and specificity (84.8\%), demonstrating 
+that the original performance degradation was attributable to data partitioning 
+rather than model limitations.
 \end{abstract}
 
-\tableofcontents
 \newpage
 
 % ══════════════════════════════════════════════════════════
@@ -85,21 +98,106 @@ Among the 10 predictors, 3 are categorical and 7 are continuous.
 
 \subsection{Summary Statistics}
 
+All continuous features fall within expected ranges, with no extreme outliers 
+identified. One incomplete observation was detected in the training set and 
+removed prior to analysis, resulting in a final training set of 440,832 records.
+
 \subsection{Feature Distribution by Churn}
+
+Figure~\ref{fig:churn_dist} shows the overall churn distribution in the training 
+set. Of 440,832 observations, 190,833 (43.3\%) are non-churned and 249,999 (56.7\%) 
+are churned, indicating a mild class imbalance that is unlikely to substantially 
+affect model performance.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/churn_distribution.png}
+    \caption{Churn Distribution (Training Set)}
+    \label{fig:churn_dist}
+\end{figure}
+
+Figure~\ref{fig:cat_dist} shows the churn rate across categorical features. 
+Contract Length shows the most notable pattern: customers on Monthly contracts 
+exhibit a substantially higher churn rate compared to those on Quarterly or Annual 
+plans. This suggests that the absence of a long-term commitment is strongly 
+associated with churn risk. Gender and Subscription Type show relatively balanced 
+churn distributions across categories, indicating these features may have limited 
+discriminative power on their own.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/categorical_distribution.png}
+    \caption{Feature Distribution by Churn: Categorical Features}
+    \label{fig:cat_dist}
+\end{figure}
+
+Figure~\ref{fig:num_dist} shows the distribution of numeric features by churn 
+status. Support Calls shows the most pronounced difference between churned and 
+non-churned customers, with churned customers making substantially more calls. 
+This suggests that higher support call frequency reflects customer dissatisfaction 
+and is a strong indicator of churn risk. Other features such as Tenure and Usage 
+Frequency show minimal differences between the two groups.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/numeric_distribution.png}
+    \caption{Feature Distribution by Churn: Numeric Features}
+    \label{fig:num_dist}
+\end{figure}
 
 \subsection{Feature Correlation}
 
+Support Calls shows the strongest positive correlation with Churn ($r = 0.57$), 
+consistent with the pattern observed in Section~3.2, confirming that higher support 
+call frequency is a strong indicator of churn risk. Total Spend shows the strongest 
+negative correlation ($r = -0.43$), suggesting that customers with higher spending 
+are less likely to leave. This is intuitive: loyal, high-value customers tend to be 
+more engaged with the service, while customers who are already considering leaving 
+may have reduced their usage and spending before eventually churning. The remaining 
+features show weak to moderate correlations with Churn.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/correlation_matrix.png}
+    \caption{Feature Correlation Matrix}
+    \label{fig:corr}
+\end{figure}
+
 \subsection{Multicollinearity Check (VIF)}
+
+To assess multicollinearity among predictors, Variance Inflation Factors (VIF) 
+were computed for all features. VIF measures the extent to which each feature 
+can be predicted by the remaining features, with values above 10 generally 
+indicating problematic collinearity. All features return VIF values below 1.15, 
+well within the acceptable range, confirming that the predictors are largely 
+independent of one another and that all features can be retained for modeling
 
 % ══════════════════════════════════════════════════════════
 \section{Methodology}
 % ══════════════════════════════════════════════════════════
 
-\subsection{Data Preprocessing}
-
 \subsection{Feature Selection (Backward Elimination)}
 
+Backward elimination was applied using AIC as the selection criterion. Starting 
+from the full model, features are iteratively removed if their exclusion reduces 
+the AIC. All features were retained after a single iteration, indicating that 
+each predictor contributes meaningful information to the model.
+
+Notably, Contract Length shows an asymmetric pattern: the Monthly coefficient 
+is large and highly significant ($p < 0.001$), while the Quarterly coefficient 
+is not significant ($p = 0.42$), suggesting that Quarterly and Annual customers 
+exhibit similar churn behavior, whereas Monthly subscribers are substantially 
+more likely to churn.
+
+The model coefficients are stable across all features, with small standard errors 
+relative to their estimates, indicating reliable parameter estimation given the 
+large sample size.
+
 \subsection{Logistic Regression}
+
+The model achieved a mean cross-validated 
+accuracy of 89.5\% and a Kappa of 0.788, indicating strong agreement between 
+predicted and actual churn labels beyond chance.
 
 % ══════════════════════════════════════════════════════════
 \section{Results}
@@ -107,9 +205,92 @@ Among the 10 predictors, 3 are categorical and 7 are continuous.
 
 \subsection{Logistic Regression (Original Split)}
 
+The model was evaluated on the held-out test set of 64,374 observations. Despite 
+achieving a cross-validated training accuracy of 89.5\%, test accuracy dropped 
+significantly to 57.1\% (Kappa = 0.177), suggesting a substantial generalization 
+problem. Sensitivity for the non-churned class was only 19.4\%, while Specificity 
+reached 99.1\%, indicating that the model correctly identified nearly all churned 
+customers but failed to recognize the majority of non-churned customers, 
+classifying them as churned instead.
+
+This discrepancy between training and test performance initially suggested 
+overfitting. To investigate further, we examined the feature distributions of 
+the most influential predictors identified in the correlation analysis, 
+specifically Support Calls ($r = 0.57$) and Total Spend ($r = -0.43$).
+
 \subsection{Distribution Shift Analysis}
 
+To investigate the root cause of the performance degradation, we examined the 
+feature distributions across the original train and test splits. Density plots 
+were generated for the two most influential predictors---\texttt{Support.Calls} 
+and \texttt{Total.Spend}---stratified by churn label.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/dist_support_calls.png}
+    \caption{Density plot of \texttt{Support.Calls} by churn label across train and test sets.}
+    \label{fig:dist_support}
+\end{figure}
+
+As shown in Figure~\ref{fig:dist_support}, the \texttt{Support.Calls} distribution 
+for the \textit{Not Churn} group in the training set is concentrated at lower 
+values, clearly separated from the \textit{Churn} group. However, the 
+\textit{Not Churn} group in the test set follows a markedly different distribution, 
+overlapping substantially with the training set's \textit{Churn} group. In other 
+words, many non-churners in the test set exhibit call volumes typically associated 
+with churners in the training set.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/dist_total_spend.png}
+    \caption{Density plot of \texttt{Total.Spend} by churn label across train and test sets.}
+    \label{fig:dist_spend}
+\end{figure}
+A similar pattern is observed in Figure~\ref{fig:dist_spend}, where test-set 
+non-churners exhibit a \texttt{Total.Spend} distribution that more closely 
+resembles training-set churners than their own training-set counterparts.
+
+Taken together, these distributional inconsistencies suggest that the original 
+train and test sets were not drawn from the same underlying population. The 
+model's poor test performance therefore reflects a data quality issue rather 
+than a deficiency in the modeling approach.
+
 \subsection{Logistic Regression (Re-split)}
+
+To address the distribution shift identified in the previous section, the original 
+train and test sets were merged and randomly re-split into 80\% training and 20\% 
+testing using a fixed random seed. The same preprocessing pipeline and feature 
+set were applied to the new split.
+
+The re-trained model achieved a cross-validated training accuracy of 84.9\% 
+(Kappa = 0.695) and a test accuracy of 84.8\% (Kappa = 0.692), with a negligible 
+gap of 0.1 percentage points between the two. Table~\ref{tab:results_comparison} 
+summarizes the performance metrics across both splits.
+
+\begin{table}[H]
+    \centering
+    \caption{Model Performance Comparison: Original Split vs.\ Re-split}
+    \label{tab:results_comparison}
+    \begin{tabular}{lccccc}
+        \toprule
+        & \textbf{CV Acc.} & \textbf{Test Acc.} & \textbf{Kappa} & \textbf{Sensitivity} & \textbf{Specificity} \\
+        \midrule
+        Original Split & 89.5\% & 57.1\% & 0.177 & 0.194 & 0.991 \\
+        Re-split       & 84.9\% & 84.8\% & 0.692 & 0.847 & 0.848 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Notably, the original split yielded a sensitivity of only 19.4\%, indicating that 
+the model failed to identify the vast majority of actual churners in the test set. 
+This extreme imbalance between sensitivity and specificity further reflects the 
+distributional mismatch: faced with test-set churners whose feature profiles 
+resembled training-set non-churners, the model defaulted to predicting 
+\textit{Not Churn} for most observations. After re-splitting, sensitivity and 
+specificity converge to 84.7\% and 84.8\% respectively, demonstrating a balanced and consistent model under consistent data conditions.
+
+This alignment confirms that the original performance degradation was driven by 
+the distributional inconsistency in the data split rather than the model itself.
 
 % ══════════════════════════════════════════════════════════
 \section{Discussion \& Conclusion}
@@ -117,8 +298,37 @@ Among the 10 predictors, 3 are categorical and 7 are continuous.
 
 \subsection{Key Findings}
 
+The analysis identified \texttt{Support.Calls}, \texttt{Total.Spend}, and 
+\texttt{Payment.Delay} as the strongest predictors of customer churn, consistent 
+with their high correlations observed during exploratory data analysis.
+
+Beyond predictive performance, this analysis also uncovered a distributional 
+inconsistency between the original train and test sets. This highlights the 
+importance of verifying data quality before modeling: applying a pre-defined 
+split without examining distributional consistency can lead to misleading 
+evaluations, regardless of how well the model itself is specified.
+
 \subsection{Business Recommendations}
 
+Since \texttt{Support.Calls} is the strongest predictor of churn, reducing 
+customer frustration should be a priority. High call volumes likely indicate 
+unresolved issues. Improving first-contact resolution and addressing recurring 
+complaints early may help retain at-risk customers.
+
+Monthly subscribers are also significantly more likely to churn than those on 
+longer contracts. Offering discounts or added benefits to encourage upgrades to 
+quarterly or annual plans could improve retention by increasing customer commitment.
+
 \subsection{Limitations}
+
+This analysis is subject to several limitations. First, logistic regression assumes 
+a linear relationship between each predictor and the log-odds of churn. If the 
+true relationships are non-linear, the model may fail to capture more complex 
+patterns in the data.
+
+Second, the dataset is cross-sectional, providing only a snapshot of customer 
+behavior at a single point in time. Without longitudinal data, it is not possible 
+to track how individual customer behavior evolves over time or to identify early 
+warning signs of churn before they fully manifest.
 
 \end{document}
