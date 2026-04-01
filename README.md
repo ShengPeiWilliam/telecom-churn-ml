@@ -13,12 +13,13 @@ Binary classification of telecom customer churn using a Kaggle dataset of over 5
 R &bull; caret &bull; pROC &bull; randomForest &bull; ggplot2 &bull; corrplot &bull; car
 
 ## Repository
-`report/churn_report.tex` &mdash; LaTeX source file
-`report/churn_report.pdf` &mdash; Final report
-`code/churn_analysis.ipynb` &mdash; Main analysis notebook
-`code/config.r` &mdash; Configuration file (data paths)
+- `report/churn_report.tex` &mdash; LaTeX source file
+- `report/churn_report.pdf` &mdash; Final report
+- `code/churn_analysis.ipynb` &mdash; Main analysis notebook
+- `code/churn_analysis.R` &mdash; Clean R script version of the analysis  
+- `code/config.r` &mdash; Configuration file (data paths)
 
 ## References
 
-Aman, S. (2024). Customer Churn Dataset [Dataset]. Kaggle.
+muhammadshahidazeem. (2024). Customer Churn Dataset [Dataset]. Kaggle.
 https://www.kaggle.com/datasets/muhammadshahidazeem/customer-churn-dataset
