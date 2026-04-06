@@ -179,49 +179,39 @@ independent of one another and that all features can be retained for modeling.
 % ══════════════════════════════════════════════════════════
 
 \subsection{Feature Selection}
-Backward elimination was applied to identify relevant predictors. Two selection 
-criteria were compared: AIC ($k = 2$) and BIC ($k = \log(n)$). AIC penalizes 
-model complexity with a fixed cost per parameter, while BIC applies a stricter 
-penalty that scales with sample size, making it more conservative in large 
-datasets. With over 400,000 observations, BIC provides a more rigorous test 
-of whether each variable contributes meaningfully to prediction.
-
-On the original training set, AIC retained all 10 predictors. After re-splitting 
-the data, AIC again retained all predictors, while BIC removed Tenure, reducing 
-the model to 9 predictors. This result is consistent with the exploratory 
-analysis, where Tenure showed minimal distributional difference between churned 
-and non-churned customers.
-
-\subsection{Data Re-partitioning}
-Initial evaluation revealed a distributional inconsistency between the
-original train and test sets, where the non-churned group in the test
-set followed a markedly different distribution from its training-set
-counterpart. To address this, the original train and test sets were
-merged and randomly re-split into a new training set (80\%, 404,164
-observations) and test set (20\%, 101,042 observations) using a fixed
-random seed for reproducibility. This ensures that both sets are drawn
-from the same underlying distribution, producing a more reliable basis
-for model evaluation.
+Backward elimination was applied using both criteria, first on the original
+training set and subsequently on the re-split training set (see
+Section~4.3). AIC penalizes model complexity with a fixed cost per
+parameter, while BIC applies a stricter penalty that scales with sample
+size, making it more conservative in large datasets. With over 400,000
+observations, BIC provides a more rigorous test of whether each variable
+contributes meaningfully to prediction.
 
 \subsection{Machine Learning Models}
-
 \paragraph{Logistic Regression}
-Logistic Regression was selected as the primary model for its interpretability, 
-providing coefficient estimates and odds ratios that translate directly into 
-actionable business insights. Two variants were trained: a full model retaining 
-all 10 predictors (AIC), and a reduced model with 9 predictors after BIC 
-selection.
+Logistic Regression was selected as the primary model for its interpretability,
+providing coefficient estimates and odds ratios that translate directly into
+actionable business insights. Two variants were fitted: a full model using
+AIC selection, and a reduced model using BIC selection.
 
 \paragraph{Random Forest}
-Random Forest was included as a non-linear benchmark to evaluate whether the 
-linear assumptions of logistic regression limit predictive performance. Due to 
-computational constraints, the model was trained on a random subsample of 
-50,000 observations from the re-split training set. All trees use the full 
-set of 10 predictors, as Random Forest internally handles variable importance 
-through its splitting mechanism.
+Random Forest was included as a non-linear benchmark to evaluate whether the
+linear assumptions of logistic regression limit predictive performance. Due to
+computational constraints, the model was trained on a random subsample of
+50,000 observations. All trees use the full set of 10 predictors, as Random
+Forest internally handles variable importance through its splitting mechanism.
+
+\subsection{Data Re-partitioning}
+Initial evaluation of the logistic regression model revealed a significant 
+discrepancy between training and test performance, prompting an investigation 
+into data quality. Distribution analysis identified a distributional inconsistency 
+between the original train and test sets. To address this, the two sets were 
+merged and randomly re-split into a new training set (80\%, 404,164 observations) 
+and test set (20\%, 101,042 observations) using a fixed random seed for 
+reproducibility. All subsequent models were trained and evaluated on this 
+corrected partition.
 
 \subsection{Evaluation Metrics}
-
 Model performance was assessed using Accuracy, Sensitivity, Specificity, 
 F1-score, and AUC-ROC. These metrics were chosen to capture different aspects 
 of classification performance, particularly given the asymmetric costs of 
@@ -232,14 +222,13 @@ misclassifying churners versus non-churners in a business context.
 % ══════════════════════════════════════════════════════════
 
 \subsection{Logistic Regression (Original Split)}
-
-The logistic regression model achieved a cross-validated training accuracy of 
-89.5\%, but test accuracy dropped to 57.1\%. Sensitivity was 99.1\% while 
-Specificity was only 19.4\%, indicating the model predicted nearly all 
+The logistic regression model achieved a training accuracy of
+89.5\%, but test accuracy dropped to 57.1\%. Sensitivity was 99.1\% while
+Specificity was only 19.4\%, indicating the model predicted nearly all
 observations as churned, misclassifying the majority of non-churners.
 
-To investigate, density plots were generated for the two most influential 
-predictors---Support Calls and Total Spend---stratified by churn label across 
+To investigate, density plots were generated for the two most influential
+predictors, Support Calls and Total Spend, stratified by churn label across
 train and test sets.
 
 \begin{figure}[H]
