@@ -57,3 +57,5 @@ data/*.csv
 *.fdb_latexmk
 *.synctex.gz
 *.out
+
+.DS_Store
