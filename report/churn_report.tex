@@ -45,9 +45,9 @@ and test accuracy (57.1\%), with a specificity of only 19.4\%. Through distribut
 between the original train and test sets. Following a random re-split, Logistic 
 Regression achieves a test accuracy of 84.8\% with an AUC of 0.908, while Random 
 Forest achieves 93.6\% accuracy and an AUC of 0.953. Feature selection using BIC 
-removed \texttt{Tenure} with no impact on performance, and coefficient analysis 
-identified \texttt{Contract.Length} (Monthly odds ratio = 8.10) and 
-\texttt{Support.Calls} (odds ratio = 1.50) as the strongest churn predictors.
+removed \textit{Tenure} with no impact on performance, and coefficient analysis 
+identified \textit{Contract Length} (Monthly odds ratio = 8.10) and 
+\textit{Support Calls} (odds ratio = 1.50) as the strongest churn predictors.
 \end{abstract}
 
 \newpage
@@ -73,7 +73,7 @@ We further compare feature selection methods (AIC and BIC) and evaluate whether
 non-linear models offer improved predictive accuracy over logistic regression.
 
 % ══════════════════════════════════════════════════════════
-s\section{Data}
+\section{Data}
 % ══════════════════════════════════════════════════════════
 
 \subsection{Dataset Overview}
@@ -179,7 +179,6 @@ independent of one another and that all features can be retained for modeling.
 % ══════════════════════════════════════════════════════════
 
 \subsection{Feature Selection}
-
 Backward elimination was applied to identify relevant predictors. Two selection 
 criteria were compared: AIC ($k = 2$) and BIC ($k = \log(n)$). AIC penalizes 
 model complexity with a fixed cost per parameter, while BIC applies a stricter 
@@ -192,6 +191,17 @@ the data, AIC again retained all predictors, while BIC removed Tenure, reducing
 the model to 9 predictors. This result is consistent with the exploratory 
 analysis, where Tenure showed minimal distributional difference between churned 
 and non-churned customers.
+
+\subsection{Data Re-partitioning}
+Initial evaluation revealed a distributional inconsistency between the
+original train and test sets, where the non-churned group in the test
+set followed a markedly different distribution from its training-set
+counterpart. To address this, the original train and test sets were
+merged and randomly re-split into a new training set (80\%, 404,164
+observations) and test set (20\%, 101,042 observations) using a fixed
+random seed for reproducibility. This ensures that both sets are drawn
+from the same underlying distribution, producing a more reliable basis
+for model evaluation.
 
 \subsection{Machine Learning Models}
 
@@ -369,15 +379,15 @@ in the lower half, aligning with the BIC result that excluded it.
 
 \subsection{Key Findings}
 
-The logistic regression coefficient analysis identified \texttt{Contract.Length}, 
-\texttt{Support.Calls}, and \texttt{Gender} as the features with the largest 
+The logistic regression coefficient analysis identified \textit{Contract Length}, 
+\textit{Support Calls}, and \textit{Gender} as the features with the largest 
 effect sizes. Monthly contract holders exhibited the highest churn risk with an 
 odds ratio of 8.10 relative to Annual customers, each additional 
-\texttt{Support.Calls} increased churn odds by 50\%, and male customers showed 
+\textit{Support Call} increased churn odds by 50\%, and male customers showed 
 approximately half the churn odds of female customers. The Random Forest variable 
-importance ranking highlighted \texttt{Support.Calls}, \texttt{Total.Spend}, and 
-\texttt{Payment.Delay} as the top predictors. While the two models rank features 
-differently due to their distinct modeling assumptions, \texttt{Support.Calls} 
+importance ranking highlighted \textit{Support Calls}, \textit{Total Spend}, and 
+\textit{Payment Delay} as the top predictors. While the two models rank features 
+differently due to their distinct modeling assumptions, \textit{Support Calls} 
 consistently emerged as a top predictor across both approaches.
 
 Beyond predictive performance, this analysis uncovered a distributional 
@@ -388,7 +398,7 @@ evaluations, regardless of how well the model itself is specified.
 
 \subsection{Business Recommendations}
 
-\texttt{Contract.Length} exhibited the largest effect on churn, with Monthly 
+\textit{Contract Length} exhibited the largest effect on churn, with Monthly 
 subscribers showing 8.10 times the churn odds of Annual customers. Offering 
 incentives such as discounts or added benefits to encourage upgrades to 
 Quarterly or Annual plans could substantially reduce churn risk. Notably, 
@@ -396,7 +406,7 @@ Quarterly and Annual customers showed no significant difference in churn
 behavior ($p = 0.314$), suggesting that any longer-term commitment is 
 effective.
 
-\texttt{Support.Calls} was consistently identified as a top predictor by both 
+\textit{Support Calls} was consistently identified as a top predictor by both 
 logistic regression (odds ratio = 1.50) and Random Forest (highest variable 
 importance). Each additional support call increased churn odds by 50\%, 
 suggesting that high call volumes reflect unresolved customer issues. Improving 
@@ -408,7 +418,7 @@ suggesting a need for targeted retention efforts for this segment.
 
 \subsection{Limitations}
 
-While Random Forest outperformed logistic regression across all metrics, 
+First, while Random Forest outperformed logistic regression across all metrics, 
 confirming that non-linear relationships exist in the data, it comes at the 
 cost of interpretability. The logistic regression model remains more suitable 
 for deriving actionable business insights through its coefficient estimates 
