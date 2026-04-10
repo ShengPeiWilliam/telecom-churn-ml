@@ -1,28 +1,23 @@
 # Customer Churn Prediction
-
-Binary classification of telecom customer churn using a Kaggle dataset of over 500,000 records. Compares Logistic Regression with Random Forest after identifying and correcting a distributional inconsistency in the original train/test split.
+Binary classification of telecom customer churn with Logistic Regression and Random Forest. Identified and corrected a distributional inconsistency in the original train/test split, improving test accuracy from 57.1% to 84.8%. Random Forest achieves 93.6% accuracy and AUC of 0.953 after the correction.
 
 ## Motivation
 
-The initial model looked fine on paper, 89.5% training accuracy. But test accuracy dropped to 57.1% with a specificity of only 19.4%. Rather than immediately tuning the model, the first step was asking why: distribution analysis revealed that the original train and test sets had fundamentally different feature distributions. This wasn't a modeling problem, it was a data problem. After a random re-split, the same Logistic Regression model jumped to 84.8% test accuracy without any changes to the model itself.
-
-The lesson was clear before you tune anything, make sure the data partition is sound.
+Customer churn is a classic binary classification problem, and a good one for practicing logistic regression: the coefficients translate directly into odds ratios, giving you interpretable answers about what actually drives churn.
 
 ## Design Decisions
 
-**Why start with Logistic Regression?**
-
-For binary classification on structured data, logistic regression gives you interpretable coefficients with odds ratios and significance tests. You can say "monthly contract customers are 8.1x more likely to churn" in a way that directly informs business action. Starting simple also establishes a baseline that justifies whether more complex models add real value.
-
 **Why compare against Random Forest?**
 
-To quantify how much nonlinear patterns matter. Random Forest achieved 93.6% accuracy and AUC of 0.953 vs. Logistic Regression's 84.8% and 0.908. The gap confirms that interaction effects and nonlinearities exist in this data, but logistic regression still captures the core signal well enough for actionable insights.
+To capture nonlinear patterns that logistic regression can't model, and to use variable importance as a way to cross-check which predictors actually matter most.
 
 **How were features selected?**
 
-Backward elimination using both AIC (k=2) and BIC (k=log(n)). BIC removed `Tenure` with no impact on performance, suggesting it carried redundant information. VIF screening handled multicollinearity before model fitting.
+Backward elimination using both AIC (k=2) and BIC (k=log(n)) to observe how different penalty strengths affect which predictors are retained.
 
 ## Key Results
+
+Random Forest achieves 93.6% accuracy and AUC of 0.953 after correcting the train/test split. The strongest churn predictors from logistic regression: Contract Length (monthly odds ratio = 8.10) and Support Calls (odds ratio = 1.50).
 
 | Model | Accuracy | Sensitivity | Specificity | F1 | AUC |
 |-------|----------|-------------|-------------|------|-----|
@@ -31,17 +26,14 @@ Backward elimination using both AIC (k=2) and BIC (k=log(n)). BIC removed `Tenur
 | LR BIC (re-split) | 84.8% | 84.8% | 84.7% | 0.861 | 0.908 |
 | **Random Forest (re-split)** | **93.6%** | **99.7%** | **85.9%** | **0.945** | **0.953** |
 
-The strongest churn predictors from logistic regression: Contract Length (monthly odds ratio = 8.10, meaning month-to-month customers are 8x more likely to churn) and Support Calls (odds ratio = 1.50, each additional call increases churn odds by 50%).
-
 ## Reflections & Next Steps
 
-The most important finding had nothing to do with modeling. The original dataset's train/test split was flawed, and no amount of hyperparameter tuning would have fixed 19.4% specificity. Catching this through distribution analysis before blaming the model saved significant effort and led to a much more honest evaluation.
+The most valuable takeaway: the original train/test split was flawed, and no hyperparameter tuning would have fixed 19.4% specificity. Always check data distribution before trusting any evaluation metric.
 
-That said, Random Forest's higher accuracy comes at the cost of interpretability. Logistic regression remains more practical for deriving actionable business insights. The Random Forest was also trained on a 50,000 subsample due to computational constraints, which may not fully represent the complete dataset. More fundamentally, the data is cross-sectional: without longitudinal records, it's not possible to track how individual customer behavior evolves or catch early warning signs of churn.
+On the modeling side, Random Forest outperforms logistic regression on accuracy, but at the cost of interpretability. For a business question like churn, knowing *why* a customer is likely to leave is often more actionable than a slightly higher AUC.
 
 Next steps:
-- **Class imbalance**: explore SMOTE or threshold tuning to improve sensitivity on the minority class.
-- **Temporal validation**: a time-based split would better reflect real-world deployment where you predict future churn from historical data.
+- **Longitudinal data**: the current dataset is cross-sectional, capturing a snapshot of each customer. Tracking the same customers over time would allow early churn signals to be detected before they fully manifest.
 - **Model interpretability**: SHAP values on the Random Forest would reveal whether it's capturing the same predictors as logistic regression or finding different patterns entirely.
 
 ## Repository
